@@ -17,10 +17,10 @@ namespace Pizzeria_InForno.Models
         [Required]
         [Display(Name = "Tempi di consegna")]
         public int TempoConsegna { get; set; }
-        [Required]
-        public string Ingredienti { get; set; }
+
 
         // questa proprietà è stata aggiunta per permettere la navigazione
         public ICollection<DettagliOrdine> DettagliOrdine { get; set; }
+        public ICollection<Ingredienti> Ingredienti { get; set; }
     }
 }

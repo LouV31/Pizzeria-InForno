@@ -1,0 +1,54 @@
+﻿@model Pizzeria_InForno.Models.Articoli
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Articoli</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NomeArticolo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NomeArticolo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Descrizione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Descrizione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Prezzo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Prezzo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Immagine)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Immagine)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TempoConsegna)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TempoConsegna)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Ingredienti)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ingredienti)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdArticolo">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

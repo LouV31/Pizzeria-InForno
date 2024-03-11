@@ -13,6 +13,7 @@ namespace Pizzeria_InForno.Data
         public DbSet<DettagliOrdine> DettagliOrdine { get; set; }
         public DbSet<Ordini> Ordini { get; set; }
         public DbSet<Utenti> Utenti { get; set; }
+        public DbSet<Ingredienti> Ingredienti { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
