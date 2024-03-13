@@ -12,8 +12,8 @@ using Pizzeria_InForno.Data;
 namespace Pizzeria_InForno.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240311142559_ModelsCompleteUpdate")]
-    partial class ModelsCompleteUpdate
+    [Migration("20240312143122_updateOrdiniTable")]
+    partial class updateOrdiniTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,10 +41,6 @@ namespace Pizzeria_InForno.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Ingredienti")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("NomeArticolo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -58,6 +54,34 @@ namespace Pizzeria_InForno.Migrations
                     b.HasKey("IdArticolo");
 
                     b.ToTable("Articoli");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.DettagliIngredienti", b =>
+                {
+                    b.Property<int>("IdDettaglioIngrediente")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDettaglioIngrediente"));
+
+                    b.Property<int>("IdArticolo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdIngrediente")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrdiniIdOrdine")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdDettaglioIngrediente");
+
+                    b.HasIndex("IdArticolo");
+
+                    b.HasIndex("IdIngrediente");
+
+                    b.HasIndex("OrdiniIdOrdine");
+
+                    b.ToTable("DettagliIngrediente");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.DettagliOrdine", b =>
@@ -84,6 +108,26 @@ namespace Pizzeria_InForno.Migrations
                     b.HasIndex("IdOrdine");
 
                     b.ToTable("DettagliOrdine");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.Ingredienti", b =>
+                {
+                    b.Property<int>("IdIngrediente")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdIngrediente"));
+
+                    b.Property<string>("NomeIngrediente")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Prezzo")
+                        .HasColumnType("float");
+
+                    b.HasKey("IdIngrediente");
+
+                    b.ToTable("Ingredienti");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.Ordini", b =>
@@ -136,11 +180,37 @@ namespace Pizzeria_InForno.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("IdUtente");
 
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.ToTable("Utenti");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.DettagliIngredienti", b =>
+                {
+                    b.HasOne("Pizzeria_InForno.Models.Articoli", "Articoli")
+                        .WithMany("DettagliIngrediente")
+                        .HasForeignKey("IdArticolo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pizzeria_InForno.Models.Ingredienti", "Ingredienti")
+                        .WithMany("DettagliIngredienti")
+                        .HasForeignKey("IdIngrediente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pizzeria_InForno.Models.Ordini", null)
+                        .WithMany("DettagliIngredienti")
+                        .HasForeignKey("OrdiniIdOrdine");
+
+                    b.Navigation("Articoli");
+
+                    b.Navigation("Ingredienti");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.DettagliOrdine", b =>
@@ -175,11 +245,20 @@ namespace Pizzeria_InForno.Migrations
 
             modelBuilder.Entity("Pizzeria_InForno.Models.Articoli", b =>
                 {
+                    b.Navigation("DettagliIngrediente");
+
                     b.Navigation("DettagliOrdine");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.Ingredienti", b =>
+                {
+                    b.Navigation("DettagliIngredienti");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.Ordini", b =>
                 {
+                    b.Navigation("DettagliIngredienti");
+
                     b.Navigation("DettagliOrdine");
                 });
 

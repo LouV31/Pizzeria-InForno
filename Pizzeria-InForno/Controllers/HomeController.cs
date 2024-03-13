@@ -1,21 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Pizzeria_InForno.Data;
 using Pizzeria_InForno.Models;
 using System.Diagnostics;
 
 namespace Pizzeria_InForno.Controllers
 {
+
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _db;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var articoli = _db.Articoli.Include(a => a.DettagliIngrediente).ThenInclude(di => di.Ingredienti).ToList();
+
+            foreach (var articolo in articoli)
+            {
+                articolo.Prezzo += articolo.DettagliIngrediente.Sum(di => di.Ingredienti.Prezzo);
+            }
+
+            return View(articoli);
         }
 
         public IActionResult Privacy()

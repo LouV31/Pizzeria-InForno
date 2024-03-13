@@ -1,0 +1,12 @@
+﻿@model Ordini
+
+<h2>Conferma Ordine</h2>
+
+<form asp-action="Create">
+
+    <div class="form-group">
+        <label for="IndirizzoSpedizione">Indirizzo di Spedizione</label>
+        <input type="text" class="form-control" id="IndirizzoSpedizione" asp-for="IndirizzoSpedizione" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Acquista</button>
+</form>

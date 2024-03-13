@@ -23,6 +23,7 @@ namespace Pizzeria_InForno.Models
         public virtual Utenti Utenti { get; set; }
 
         public virtual ICollection<DettagliOrdine> DettagliOrdine { get; set; }
+        public virtual ICollection<DettagliIngredienti> DettagliIngredienti { get; set; }
 
 
     }

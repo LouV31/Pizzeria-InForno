@@ -19,8 +19,9 @@ namespace Pizzeria_InForno.Models
         public int TempoConsegna { get; set; }
 
 
+
         // questa proprietà è stata aggiunta per permettere la navigazione
-        public ICollection<DettagliOrdine> DettagliOrdine { get; set; }
-        public ICollection<Ingredienti> Ingredienti { get; set; }
+        public virtual ICollection<DettagliOrdine> DettagliOrdine { get; set; }
+        public virtual ICollection<DettagliIngredienti> DettagliIngrediente { get; set; }
     }
 }

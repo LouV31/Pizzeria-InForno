@@ -38,9 +38,12 @@
                 <span asp-validation-for="TempoConsegna" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Ingredienti" class="control-label"></label>
-                <input asp-for="Ingredienti" class="form-control" />
-                <span asp-validation-for="Ingredienti" class="text-danger"></span>
+                <label for="Ingredienti">Ingredienti</label>
+                @Html.ListBox("Ingredienti", (MultiSelectList)ViewBag.Ingredienti, new { @class = "form-control" })
+                <button type="button" onclick="addIngredient()">Aggiungi</button>
+            </div>
+            <div id="listaIngredientiSelezionati" class="d-flex">
+
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -52,4 +55,63 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Script{
+    <script>
+        let selectedIngredients = [];   
+        let addIngredient = () => {
+            let select = document.getElementById("Ingredienti");
+            let idIngrediente = select.value;
+            let nomeIngrediente = select.options[select.selectedIndex].text;
+            if (!selectedIngredients.includes(idIngrediente)) {
+                selectedIngredients.push(idIngrediente);
+                let list = document.getElementById("listaIngredientiSelezionati");
+
+                // Crea un div contenitore per l'ingrediente
+                let container = document.createElement("div");
+                container.id = "container-" + idIngrediente;
+
+                // Crea un paragrafo per il nome dell'ingrediente
+                let ingrediente = document.createElement("p");
+                ingrediente.id = "ingrediente-" + idIngrediente;
+                ingrediente.innerHTML = nomeIngrediente;
+
+                // Crea un pulsante per rimuovere l'ingrediente
+                let removeButton = document.createElement("button");
+                removeButton.innerHTML = "Rimuovi";
+                removeButton.type = "button";
+                removeButton.onclick = () => removeIngredient(idIngrediente);
+
+                // Aggiunge l'ingrediente e il pulsante di rimozione al contenitore
+                container.appendChild(ingrediente);
+                container.appendChild(removeButton);
+
+                // Aggiunge il contenitore alla lista
+                list.appendChild(container);
+
+                // Crea un campo nascosto per l'ID dell'ingrediente
+                let hiddenField = document.createElement("input");
+                hiddenField.type = "hidden";
+                hiddenField.name = "ingredientiSelezionati";
+                hiddenField.value = idIngrediente;
+
+                // Aggiunge il campo nascosto al form
+                let form = document.querySelector("form");
+                form.appendChild(hiddenField);
+            }
+        }
+        let removeIngredient = (idIngrediente) => {
+            let index = selectedIngredients.indexOf(idIngrediente);
+            if (index > -1) {
+                selectedIngredients.splice(index, 1);
+                let container = document.getElementById("container-" + idIngrediente);
+                container.parentNode.removeChild(container);
+
+                // Rimuove il campo nascosto dal form
+                let hiddenField = document.querySelector(`input[value="${idIngrediente}"]`);
+                hiddenField.parentNode.removeChild(hiddenField);
+            }
+        }
+    </script>
+}
 

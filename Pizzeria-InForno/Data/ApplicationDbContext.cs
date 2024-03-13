@@ -14,10 +14,12 @@ namespace Pizzeria_InForno.Data
         public DbSet<Ordini> Ordini { get; set; }
         public DbSet<Utenti> Utenti { get; set; }
         public DbSet<Ingredienti> Ingredienti { get; set; }
+        public DbSet<DettagliIngredienti> DettagliIngrediente { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Utenti>().HasIndex(u => u.Username).IsUnique();
+
         }
     }
 }

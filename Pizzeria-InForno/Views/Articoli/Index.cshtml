@@ -4,11 +4,17 @@
     ViewData["Title"] = "Index";
 }
 
+
 <h1>Index</h1>
 
+<div class="d-flex">
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+    <p>
+        <a asp-action="Index" asp-controller="Ingredienti">Gestione ingredienti</a>
+    </p>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -27,9 +33,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.TempoConsegna)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.Ingredienti)
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -51,9 +57,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.TempoConsegna)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.Ingredienti)
-            </td>
+            </td> *@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdArticolo">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.IdArticolo">Details</a> |

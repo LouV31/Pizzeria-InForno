@@ -1,0 +1,18 @@
+﻿@model List<Carrello>
+@{
+    ViewData["Title"] = "CartView";
+}
+
+<h1>CartView</h1>
+
+@foreach(var item in Model)
+{
+    <p>@item.Articoli.NomeArticolo</p>
+    <p>@item.Quantita</p>
+    <p>@item.Totale</p>    
+
+    
+}
+<h2>Totale dell'ordine: @ViewBag.PrezzoTotale</h2>
+<a class="btn btn-primary" asp-controller="Ordine" asp-action="Create">Crea Ordine</a>
+

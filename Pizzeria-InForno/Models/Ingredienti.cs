@@ -7,10 +7,11 @@ namespace Pizzeria_InForno.Models
         [Key]
         public int IdIngrediente { get; set; }
         [Required]
-        [Display(Name = "Nome Ingrediente")]
+        [Display(Name = "Nome")]
         public string NomeIngrediente { get; set; }
+        [Required]
+        public double Prezzo { get; set; }
 
-        public virtual ICollection<Articoli> Articoli { get; set; }
-
+        public virtual ICollection<DettagliIngredienti> DettagliIngredienti { get; set; }
     }
 }

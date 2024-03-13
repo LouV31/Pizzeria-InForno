@@ -25,13 +25,21 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (User.IsInRole("admin"))
+                        
+                        {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Articoli" asp-action="Index">BackOffice</a>
                         </li>
+                            
+                        }
                     </ul>
                     <ul class="navbar-nav ">   
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark text-decoration-none" asp-area="" asp-controller="Articoli" asp-action="CartView">Carrello</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark text-decoration-none" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
                             </li>
@@ -91,6 +99,7 @@
             }
         })
     </script>
+    @RenderSection("Script", required: false)
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

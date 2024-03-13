@@ -51,7 +51,8 @@ namespace Pizzeria_InForno.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, dbUser.Username),
-                new Claim(ClaimTypes.Role, dbUser.Ruolo)
+                new Claim(ClaimTypes.Role, dbUser.Ruolo),
+                new Claim(ClaimTypes.NameIdentifier, dbUser.IdUtente.ToString())
             };
             // Salviamo in questa variabile l'identità dell'utente autenticato
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

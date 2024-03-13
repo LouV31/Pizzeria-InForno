@@ -1,8 +1,113 @@
-﻿@{
+﻿@model IEnumerable<Pizzeria_InForno.Models.Articoli>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
+            @foreach(var articolo in Model)
+            {
+                <div class="col">
+                    <div class="card" >
+                        <img class="card-img-top" src="@articolo.Immagine" alt="@articolo.NomeArticolo">
+                        <div class="card-body">
+                            <h5 class="card-title">@articolo.NomeArticolo</h5>
+                            <p class="card-text">@articolo.Descrizione</p>
+                            <p class="card-text">Prezzo: @articolo.Prezzo €</p> 
+                            <button type="button" id="@articolo.IdArticolo" href="#" class="btn btn-primary btn-add">Aggiungi al Carrello</button>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+    
 </div>
+<script>
+    //l'id lo prendo dal button e lo invio al carrello con una fetch
+    let buttons = document.querySelectorAll(".btn-add");
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            let productId = button.id;
+            sentToCart(productId);
+        });
+    });
+
+    // qui sto facendo una fetch per inviare l'id dell'articolo al carrello
+    
+    let sentToCart = async (id) => {
+        try {
+            let response = await fetch(`Articoli/AddToCart/${id}`, {
+                method: 'POST', // or 'GET'
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                console.log("Articolo inviato correttamente");
+            } else {
+                console.log("Articolo non inviato");
+            }
+        }
+        catch (error) {
+            console.log("Error: " + error);
+        }
+
+    }
+
+    // window.addEventListener("DOMContentLoaded", () => {
+    //     fetchArticoli();
+        
+    // })
+    // let fetchArticoli = async () => {
+    //     try {
+    //         let response = await fetch("Articoli/GetArticoli");
+    //         if (response.ok) {
+    //             let articoli = await response.json();
+    //             console.log(articoli);
+    //             let rowContainer = document.querySelector(".row");
+    //             articoli.forEach(articolo => {
+    //                 let card = document.createElement("div");
+    //                 card.classList.add("card");
+                    
+    //                 let img = document.createElement("img");
+    //                 img.classList.add("card-img-top");
+    //                 img.src = articolo.immagine;
+    //                 img.alt = "Card image cap";
+    //                 let cardBody = document.createElement("div");
+    //                 cardBody.classList.add("card-body");
+    //                 let title = document.createElement("h5");
+    //                 title.classList.add("card-title");
+    //                 title.textContent = articolo.nomeArticolo;
+    //                 let text = document.createElement("p");
+    //                 text.classList.add("card-text");
+    //                 text.textContent = articolo.descrizione;
+    //                 let price = document.createElement("p");
+    //                 price.classList.add("card-text");
+    //                 price.innerHTML += "Prezzo: " + articolo.prezzo + "€";
+    //                 let button = document.createElement("a");
+    //                 button.classList.add("btn");
+    //                 button.classList.add("btn-primary");
+    //                 button.textContent = "Ordina";
+    //                 cardBody.appendChild(title);
+    //                 cardBody.appendChild(text);
+    //                 cardBody.appendChild(button);
+    //                 cardBody.appendChild(price);
+    //                 card.appendChild(img);
+    //                 card.appendChild(cardBody);
+    //                 rowContainer.appendChild(card);
+    //             }); 
+    //         } else {
+    //             console.log("Errore");
+
+    //         }
+    //     }
+    //     catch (error) {
+    //         console.log("Error", error)
+    //     }
+
+    // }
+</script>

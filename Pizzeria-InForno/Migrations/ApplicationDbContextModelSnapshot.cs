@@ -22,21 +22,6 @@ namespace Pizzeria_InForno.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ArticoliIngredienti", b =>
-                {
-                    b.Property<int>("ArticoliIdArticolo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IngredientiIdIngrediente")
-                        .HasColumnType("int");
-
-                    b.HasKey("ArticoliIdArticolo", "IngredientiIdIngrediente");
-
-                    b.HasIndex("IngredientiIdIngrediente");
-
-                    b.ToTable("ArticoliIngredienti");
-                });
-
             modelBuilder.Entity("Pizzeria_InForno.Models.Articoli", b =>
                 {
                     b.Property<int>("IdArticolo")
@@ -66,6 +51,34 @@ namespace Pizzeria_InForno.Migrations
                     b.HasKey("IdArticolo");
 
                     b.ToTable("Articoli");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.DettagliIngredienti", b =>
+                {
+                    b.Property<int>("IdDettaglioIngrediente")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDettaglioIngrediente"));
+
+                    b.Property<int>("IdArticolo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdIngrediente")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrdiniIdOrdine")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdDettaglioIngrediente");
+
+                    b.HasIndex("IdArticolo");
+
+                    b.HasIndex("IdIngrediente");
+
+                    b.HasIndex("OrdiniIdOrdine");
+
+                    b.ToTable("DettagliIngrediente");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.DettagliOrdine", b =>
@@ -105,6 +118,9 @@ namespace Pizzeria_InForno.Migrations
                     b.Property<string>("NomeIngrediente")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Prezzo")
+                        .HasColumnType("float");
 
                     b.HasKey("IdIngrediente");
 
@@ -171,19 +187,27 @@ namespace Pizzeria_InForno.Migrations
                     b.ToTable("Utenti");
                 });
 
-            modelBuilder.Entity("ArticoliIngredienti", b =>
+            modelBuilder.Entity("Pizzeria_InForno.Models.DettagliIngredienti", b =>
                 {
-                    b.HasOne("Pizzeria_InForno.Models.Articoli", null)
-                        .WithMany()
-                        .HasForeignKey("ArticoliIdArticolo")
+                    b.HasOne("Pizzeria_InForno.Models.Articoli", "Articoli")
+                        .WithMany("DettagliIngrediente")
+                        .HasForeignKey("IdArticolo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pizzeria_InForno.Models.Ingredienti", null)
-                        .WithMany()
-                        .HasForeignKey("IngredientiIdIngrediente")
+                    b.HasOne("Pizzeria_InForno.Models.Ingredienti", "Ingredienti")
+                        .WithMany("DettagliIngredienti")
+                        .HasForeignKey("IdIngrediente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Pizzeria_InForno.Models.Ordini", null)
+                        .WithMany("DettagliIngredienti")
+                        .HasForeignKey("OrdiniIdOrdine");
+
+                    b.Navigation("Articoli");
+
+                    b.Navigation("Ingredienti");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.DettagliOrdine", b =>
@@ -218,11 +242,20 @@ namespace Pizzeria_InForno.Migrations
 
             modelBuilder.Entity("Pizzeria_InForno.Models.Articoli", b =>
                 {
+                    b.Navigation("DettagliIngrediente");
+
                     b.Navigation("DettagliOrdine");
+                });
+
+            modelBuilder.Entity("Pizzeria_InForno.Models.Ingredienti", b =>
+                {
+                    b.Navigation("DettagliIngredienti");
                 });
 
             modelBuilder.Entity("Pizzeria_InForno.Models.Ordini", b =>
                 {
+                    b.Navigation("DettagliIngredienti");
+
                     b.Navigation("DettagliOrdine");
                 });
 

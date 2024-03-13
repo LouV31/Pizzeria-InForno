@@ -5,7 +5,7 @@
 namespace Pizzeria_InForno.Migrations
 {
     /// <inheritdoc />
-    public partial class ModelsComplete : Migration
+    public partial class finalUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace Pizzeria_InForno.Migrations
                 {
                     IdUtente = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Ruolo = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -52,7 +52,8 @@ namespace Pizzeria_InForno.Migrations
                     IdUtente = table.Column<int>(type: "int", nullable: false),
                     IndirizzoSpedizione = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsConsegnato = table.Column<bool>(type: "bit", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Totale = table.Column<double>(type: "float", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,9 +74,7 @@ namespace Pizzeria_InForno.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdOrdine = table.Column<int>(type: "int", nullable: false),
                     IdArticolo = table.Column<int>(type: "int", nullable: false),
-                    Quantita = table.Column<int>(type: "int", nullable: false),
-                    PrezzoUnitario = table.Column<double>(type: "float", nullable: false),
-                    PrezzoTotale = table.Column<double>(type: "float", nullable: false)
+                    Quantita = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,6 +107,12 @@ namespace Pizzeria_InForno.Migrations
                 name: "IX_Ordini_IdUtente",
                 table: "Ordini",
                 column: "IdUtente");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Utenti_Username",
+                table: "Utenti",
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />
