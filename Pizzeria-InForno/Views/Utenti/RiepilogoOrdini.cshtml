@@ -1,0 +1,29 @@
+﻿@model List<Pizzeria_InForno.Models.Ordini>
+
+<div class="container">
+    <h1>Riepilogo Ordini</h1>
+    <div class="row row-cols-1">
+        @foreach (var ordine in Model)
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="card-title">Ordine N°: @ordine.IdOrdine</h5>  
+                            <p class="card-text">Indirizzo di Spedizione: @ordine.IndirizzoSpedizione</p>
+                            @* <p class="card-text">Data Ordine: @ordine.DataOrdine</p> *@
+                            <p class="card-text">Prezzo Totale: @ordine.Totale</p>
+                        
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <a asp-action="DettagliOrdine" asp-controller="Utenti" asp-route-idOrdine="@ordine.IdOrdine">Dettagli</a>
+                            <a asp-action="DeleteOrdine" asp-controller="Utenti" asp-route-idOrdine="@ordine.IdOrdine">Elimina</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+                          
+    </div>
+</div>

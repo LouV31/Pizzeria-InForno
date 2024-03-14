@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Pizzeria_InForno.Data;
 using Pizzeria_InForno.Models;
+using System.Security.Claims;
 
 namespace Pizzeria_InForno.Controllers
 {
@@ -45,6 +48,89 @@ namespace Pizzeria_InForno.Controllers
                 TempData["error"] = "Errore nella registrazione";
                 return View(utente);
             }
+        }
+
+        // Get Utente/Ordine/RiepilogoOrdini
+        [Authorize(Roles = "user,admin")]
+        public async Task<IActionResult> RiepilogoOrdini()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            var ordini = await _db.Ordini.Include(o => o.DettagliOrdine).ThenInclude(d => d.Articoli).Where(o => o.IdUtente == int.Parse(userId)).ToListAsync();
+            return View(ordini);
+        }
+
+        // GET Utente/Ordine/DettagliOrdine
+        [Authorize(Roles = "user,admin")]
+        public async Task<IActionResult> DettagliOrdine(int? idOrdine)
+        {
+            if (idOrdine == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var ordine = await _db.Ordini.Include(o => o.DettagliOrdine).ThenInclude(d => d.Articoli).ThenInclude(a => a.DettagliIngrediente).ThenInclude(di => di.Ingredienti).FirstOrDefaultAsync(o => o.IdOrdine == idOrdine && o.IdUtente == int.Parse(userId));
+            if (ordine == null)
+            {
+                return RedirectToAction("RiepilogoOrdini");
+            }
+            foreach (var dettaglio in ordine.DettagliOrdine)
+            {
+                var prezzoArticolo = dettaglio.Articoli.Prezzo + dettaglio.Articoli.DettagliIngrediente.Sum(di => di.Ingredienti.Prezzo);
+                dettaglio.Articoli.Prezzo = prezzoArticolo * dettaglio.Quantita;
+            }
+            return View(ordine);
+        }
+
+        // GET Utente/Ordine/DeleteOrdine   
+        [Authorize(Roles = "user,admin")]
+        public async Task<IActionResult> DeleteOrdine(int? idOrdine)
+        {
+            if (idOrdine == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            var ordine = await _db.Ordini.Include(o => o.DettagliOrdine).FirstOrDefaultAsync(o => o.IdOrdine == idOrdine && o.IdUtente == int.Parse(userId));
+            if (ordine == null)
+            {
+                return RedirectToAction("RiepilogoOrdini");
+            }
+
+            return View(ordine);
+        }
+
+        // POST Utente/Ordine/DeleteOrdine
+        [HttpPost, ActionName("DeleteOrdine")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "user, admin")]
+        public async Task<IActionResult> DeleteOrdineConfirmed(int idOrdine)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            var ordine = await _db.Ordini.Include(o => o.DettagliOrdine).FirstOrDefaultAsync(o => o.IdOrdine == idOrdine && o.IdUtente == int.Parse(userId));
+            if (ordine == null)
+            {
+                return RedirectToAction("RiepilogoOrdini");
+            }
+            _db.Ordini.Remove(ordine);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("RiepilogoOrdini");
         }
     }
 }

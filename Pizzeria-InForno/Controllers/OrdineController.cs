@@ -15,6 +15,121 @@ namespace Pizzeria_InForno.Controllers
         {
             _db = db;
         }
+        // BACKOFFICE SECTION
+
+        // GET Ordine/Index - Tutti gli ordini
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Index()
+        {
+            var ordini = await _db.Ordini.Include(o => o.DettagliOrdine).ThenInclude(d => d.Articoli).Include(o => o.Utenti).ToListAsync();
+
+            return View(ordini);
+        }
+
+        // GET Ordine/Dettagli
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Dettagli(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var ordine = _db.Ordini.Include(o => o.DettagliOrdine).ThenInclude(d => d.Articoli).Single(o => o.IdOrdine == id);
+            if (ordine == null)
+            {
+                return NotFound();
+            }
+            return View(ordine);
+        }
+        // GET Ordine/Edit 
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var ordine = await _db.Ordini.FindAsync(id);
+            if (ordine == null)
+            {
+                return NotFound();
+            }
+            return View(ordine);
+        }
+
+        // POST Ordine/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("IdOrdine, IdUtente, IndirizzoSpedizione, IsConsegnato, Note, Totale")] Ordini ordine)
+        {
+            if (id != ordine.IdOrdine)
+            {
+                return NotFound();
+            }
+            ModelState.Remove("Utenti");
+            ModelState.Remove("DettagliOrdine");
+            ModelState.Remove("DettagliIngredienti");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _db.Update(ordine);
+                    await _db.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrdineExists(ordine.IdOrdine))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(ordine);
+        }
+
+        private bool OrdineExists(int id)
+        {
+            return _db.Ordini.Any(e => e.IdOrdine == id);
+        }
+
+        // GET Ordine/Delete
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var ordine = await _db.Ordini.FirstOrDefaultAsync(m => m.IdOrdine == id);
+            if (ordine == null)
+            {
+                return NotFound();
+            }
+            return View(ordine);
+        }
+
+        // POST Ordine/Delete
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var ordine = await _db.Ordini.FindAsync(id);
+            if (ordine != null)
+            {
+                _db.Ordini.Remove(ordine);
+            }
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
 
         [Authorize(Roles = "user, admin")]
         public IActionResult Create()

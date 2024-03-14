@@ -38,6 +38,9 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
+                                <a class="nav-link text-dark text-decoration-none" asp-area="" asp-controller="Utenti" asp-action="RiepilogoOrdini">Riepilogo Ordini</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark text-decoration-none" asp-area="" asp-controller="Articoli" asp-action="CartView">Carrello</a>
                             </li>
                             <li class="nav-item">
