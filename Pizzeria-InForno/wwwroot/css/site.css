@@ -20,3 +20,33 @@ html {
 body {
   margin-bottom: 60px;
 }
+.bgBody {
+    background-color: #FEF4D6;
+}
+.bgNav {
+    background-color: #6F1A1F;
+}
+.imgContainer {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.myImgPizza {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.myBorder {
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-radius: 0;
+    border-bottom: 2px solid #6F1A1F;
+
+}
+.myTextColor {
+    color: #F4AC5A;
+    text-shadow : 1px 1px 0px #000000;
+}

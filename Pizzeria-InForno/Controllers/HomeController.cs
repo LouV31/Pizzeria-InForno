@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pizzeria_InForno.Data;
@@ -6,7 +7,7 @@ using System.Diagnostics;
 
 namespace Pizzeria_InForno.Controllers
 {
-
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -30,7 +31,8 @@ namespace Pizzeria_InForno.Controllers
             return View(articoli);
         }
 
-        public IActionResult Privacy()
+        [AllowAnonymous]
+        public IActionResult WelcomePage()
         {
             return View();
         }

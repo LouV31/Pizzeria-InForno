@@ -12,10 +12,11 @@ namespace Pizzeria_InForno.Controllers
     public class ArticoliController : Controller
     {
         private readonly ApplicationDbContext _db;
-
-        public ArticoliController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public ArticoliController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
         {
             _db = db;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Articoli
@@ -30,19 +31,7 @@ namespace Pizzeria_InForno.Controllers
 
             return View(articoli);
         }
-        public async Task<IActionResult> GetArticoli()
-        {
-            var articoli = await _db.Articoli
-                .Select(a => new
-                {
-                    a.IdArticolo,
-                    a.NomeArticolo,
-                    a.Descrizione,
-                    a.Immagine,
-                    a.Prezzo,
-                }).ToListAsync();
-            return Json(articoli);
-        }
+
 
         // GET: Articoli/Details/5
         [Authorize(Roles = "admin")]
@@ -79,10 +68,11 @@ namespace Pizzeria_InForno.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Create([Bind("NomeArticolo,Descrizione,Prezzo,Immagine,TempoConsegna")] Articoli articoli, List<int> ingredientiSelezionati)
+        public async Task<IActionResult> Create([Bind("NomeArticolo,Descrizione,Prezzo,TempoConsegna")] Articoli articoli, List<int> ingredientiSelezionati, IFormFile Immagine)
         {
             ModelState.Remove("DettagliOrdine");
             ModelState.Remove("DettagliIngrediente");
+            ModelState.Remove("Immagine");
             if (ModelState.IsValid)
             {
                 if (_db.Articoli.Any(a => a.NomeArticolo == articoli.NomeArticolo))
@@ -91,6 +81,17 @@ namespace Pizzeria_InForno.Controllers
                     ViewBag.Ingredienti = new MultiSelectList(_db.Ingredienti, "IdIngrediente", "NomeIngrediente");
                     return View(articoli);
                 }
+                if (Immagine != null && Immagine.Length > 0)
+                {
+                    var fileName = Path.GetFileName(Immagine.FileName);
+                    var path = Path.Combine(_hostEnvironment.WebRootPath, "img", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await Immagine.CopyToAsync(fileStream);
+                    }
+                    articoli.Immagine = Path.Combine("img", fileName);
+                }
+
                 _db.Articoli.Add(articoli);
                 await _db.SaveChangesAsync();
                 foreach (var idIngrediente in ingredientiSelezionati)
@@ -133,7 +134,7 @@ namespace Pizzeria_InForno.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("IdArticolo,NomeArticolo,Descrizione,Prezzo,Immagine,TempoConsegna")] Articoli articoli)
+        public async Task<IActionResult> Edit(int id, [Bind("IdArticolo,NomeArticolo,Descrizione,Prezzo,Immagine,TempoConsegna")] Articoli articoli, IFormFile Immagine)
         {
             if (id != articoli.IdArticolo)
             {
@@ -142,6 +143,7 @@ namespace Pizzeria_InForno.Controllers
 
             ModelState.Remove("DettagliOrdine");
             ModelState.Remove("DettagliIngrediente");
+
             if (ModelState.IsValid)
             {
                 try
@@ -150,6 +152,16 @@ namespace Pizzeria_InForno.Controllers
                     {
                         TempData["error"] = "Questo nome è associato ad un altro articolo.";
                         return View(articoli);
+                    }
+                    if (Immagine != null && Immagine.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(Immagine.FileName);
+                        var path = Path.Combine(_hostEnvironment.WebRootPath, "img", fileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await Immagine.CopyToAsync(fileStream);
+                        }
+                        articoli.Immagine = Path.Combine("img", fileName);
                     }
                     _db.Update(articoli);
                     await _db.SaveChangesAsync();
@@ -211,10 +223,13 @@ namespace Pizzeria_InForno.Controllers
         }
 
         [Authorize(Roles = "user, admin")]
+        [HttpPost]
         // Questo metodo aggiunge un articolo al carrello
 
-        public void AddToCart(int id)
+        public void AddToCart([FromBody] Carrello carrello)
         {
+            int id = carrello.Articoli.IdArticolo;
+            int quantity = carrello.Quantita;
             // Variabile che ci dice se l'articolo è già presente nel carrello
             bool isExist = false;
             // Query per trovare l'articolo nel db
@@ -234,7 +249,7 @@ namespace Pizzeria_InForno.Controllers
                     {
                         if (item.Articoli.IdArticolo == id)
                         {
-                            item.Quantita++;
+                            item.Quantita += quantity;
                             // Serializziamo la lista di articoli in una stringa e la salviamo nella sessione
                             HttpContext.Session.SetString("cartList", JsonConvert.SerializeObject(cart));
                             isExist = true;
@@ -251,14 +266,14 @@ namespace Pizzeria_InForno.Controllers
                         NomeArticolo = articolo.NomeArticolo,
                         Descrizione = articolo.Descrizione,
                         Prezzo = articolo.Prezzo,
-                        Immagine = articolo.Immagine,
+                        Immagine = Path.Combine("/", articolo.Immagine),
                         TempoConsegna = articolo.TempoConsegna
                     };
                     // Creiamo un nuovo oggetto carrello e gli assegniamo i valori dell'articoloPerCarrello e la quantità
                     Carrello cart = new Carrello
                     {
                         Articoli = articoliPerCarrello,
-                        Quantita = 1
+                        Quantita = quantity
                     };
                     // Prendiamo il carrello dalla sessione
                     List<Carrello> cartList = new List<Carrello>();
@@ -274,6 +289,27 @@ namespace Pizzeria_InForno.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Authorize(Roles = "user, admin")]
+        public IActionResult RemoveFromCart([FromBody] Carrello carrello)
+        {
+            int id = carrello.Articoli.IdArticolo;
+            var cartSession = HttpContext.Session.GetString("cartList");
+            if (cartSession != null)
+            {
+                List<Carrello> cart = JsonConvert.DeserializeObject<List<Carrello>>(cartSession);
+                var itemToRemove = cart.SingleOrDefault(item => item.Articoli.IdArticolo == id);
+                if (itemToRemove != null)
+                {
+                    cart.Remove(itemToRemove);
+                    HttpContext.Session.SetString("cartList", JsonConvert.SerializeObject(cart));
+                    return Json(itemToRemove);
+                }
+            }
+            return BadRequest();
+        }
+
         [Authorize(Roles = "user, admin")]
         public IActionResult CartView()
         {

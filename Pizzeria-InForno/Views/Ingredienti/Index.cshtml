@@ -4,14 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="myTextColor mb-3">Ingredienti</h1>
 
 <div class="d-flex">
 <p>
-    <a asp-action="Create">Create New</a>
+        <a asp-action="Create" class="btn btn-sm btn-success me-3">Create New</a>
 </p>
     <p>
-        <a asp-action="Index" asp-controller="Articoli">Torna alla gesione Articoli</a>
+        <a asp-action="Index" asp-controller="Articoli" class="btn btn-sm btn-outline-danger me-3">Torna alla gesione Articoli</a>
     </p>
 
 </div>
@@ -37,9 +37,9 @@
                 @Html.DisplayFor(modelItem => item.Prezzo)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdIngrediente">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdIngrediente">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdIngrediente">Delete</a>
+                    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@item.IdIngrediente">Edit</a> 
+                    <a class="btn btn-sm btn-warning" asp-action="Details" asp-route-id="@item.IdIngrediente">Details</a> 
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.IdIngrediente">Delete</a>
             </td>
         </tr>
 }

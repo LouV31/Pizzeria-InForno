@@ -5,17 +5,17 @@
 }
 
 
-<h1>Index</h1>
+<h1 class="myTextColor mb-3">Articoli</h1>
 
 <div class="d-flex">
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-sm btn-success me-3">Nuovo Prodotto</a>
 </p>
     <p>
-        <a asp-action="Index" asp-controller="Ingredienti">Gestione ingredienti</a>
+        <a asp-action="Index" asp-controller="Ingredienti" class="btn btn-sm btn-warning me-3">Gestione ingredienti</a>
     </p>
     <p>
-        <a asp-action="Index" asp-controller="Ordine">Gestione ordini</a>
+        <a asp-action="Index" asp-controller="Ordine" class="btn btn-sm btn-warning me-3">Gestione ordini</a>
     </p>
 </div>
 <table class="table">
@@ -64,9 +64,9 @@
                 @Html.DisplayFor(modelItem => item.Ingredienti)
             </td> *@
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdArticolo">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdArticolo">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdArticolo">Delete</a>
+                <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@item.IdArticolo">Edit</a> 
+                <a class="btn btn-sm btn-warning" asp-action="Details" asp-route-id="@item.IdArticolo">Details</a> 
+                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.IdArticolo">Delete</a>
             </td>
         </tr>
 }

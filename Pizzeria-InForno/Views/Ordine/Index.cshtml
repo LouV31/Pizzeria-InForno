@@ -3,57 +3,115 @@
 @{
     ViewData["Title"] = "Index";
 }
+<div class="d-flex align-items-center justify-content-between mt-3 mb-5">
+<h1 class="myTextColor">Ordini</h1>
+<div class="d-flex flex-column">
+    <div class="d-flex">
+    <input type="date" id="inputDate" />
+    <button type="button" id="fetchFatturato" class="ms-2 btn btn-sm btn-outline-success rounded-pill">Calcola Fatturato</button>
 
-<h1>Index</h1>
+    </div>
+    <p class="mb-0" id="fatturato"></p>
+</div>
+    <div class="d-flex flex-column">
+        <div class="d-flex">
+            <button type="button" id="fetchOrdiniEvasi" class="ms-2 btn btn-sm btn-outline-success rounded-pill">Calcola Ordini Evasi</button>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+        </div>
+        <p class="mb-0" id="ordiniEvasi"></p>
+    </div>
+</div>
+
+
+<h4 class="myTextColor mb-3">Ordini Evasi</h4>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IndirizzoSpedizione)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsConsegnato)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Note)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Totale)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Utenti)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.IndirizzoSpedizione)</th>
+            <th>@Html.DisplayNameFor(model => model.DataOrdine)</th>
+            <th>@Html.DisplayNameFor(model => model.IsConsegnato)</th>
+            <th>@Html.DisplayNameFor(model => model.Note)</th>
+            <th>@Html.DisplayNameFor(model => model.Totale)</th>
+            <th>@Html.DisplayNameFor(model => model.Utenti.Username)</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IndirizzoSpedizione)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsConsegnato)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Note)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Totale)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Utenti.Username)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdOrdine">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdOrdine">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdOrdine">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Where(o => o.IsConsegnato))
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.IndirizzoSpedizione)</td>
+                <td>@Html.DisplayFor(modelItem => item.DataOrdine)</td>
+                <td>@Html.DisplayFor(modelItem => item.IsConsegnato)</td>
+                <td>@Html.DisplayFor(modelItem => item.Note)</td>
+                <td>@Html.DisplayFor(modelItem => item.Totale)</td>
+                <td>@Html.DisplayFor(modelItem => item.Utenti.Username)</td>
+                <td>
+                    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@item.IdOrdine">Edit</a> 
+                    <a class="btn btn-sm btn-warning" asp-action="Dettagli" asp-route-id="@item.IdOrdine">Details</a> 
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.IdOrdine">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<h4 class="myTextColor mt-5">Ordini Non Evasi</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.IndirizzoSpedizione)</th>
+            <th>@Html.DisplayNameFor(model => model.DataOrdine)</th>
+            <th>@Html.DisplayNameFor(model => model.IsConsegnato)</th>
+            <th>@Html.DisplayNameFor(model => model.Note)</th>
+            <th>@Html.DisplayNameFor(model => model.Totale)</th>
+            <th>@Html.DisplayNameFor(model => model.Utenti.Username)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Where(o => !o.IsConsegnato))
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.IndirizzoSpedizione)</td>
+                <td>@Html.DisplayFor(modelItem => item.DataOrdine)</td>
+                <td>@Html.DisplayFor(modelItem => item.IsConsegnato)</td>
+                <td>@Html.DisplayFor(modelItem => item.Note)</td>
+                <td>@Html.DisplayFor(modelItem => item.Totale)</td>
+                <td>@Html.DisplayFor(modelItem => item.Utenti.Username)</td>
+                <td>
+                    <a class="btn btn-sm btn-success" asp-action="Edit" asp-route-id="@item.IdOrdine">Edit</a>
+                    <a class="btn btn-sm btn-warning" asp-action="Dettagli" asp-route-id="@item.IdOrdine">Details</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.IdOrdine">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    let button = document.getElementById('fetchFatturato');
+    button.addEventListener("click", async () => {
+        let date = document.getElementById('inputDate').value;
+        try {
+            let response = await fetch(`/Ordine/TotaleFatturatoInData?date=${date}`);
+            let data = await response.json();
+            console.log(data);
+            document.getElementById('fatturato').innerText = `Fatturato in data ${date}: ${data}€`;
+        }
+        catch (error) {
+            console.log("error: ", error);
+        }
+    })
+        let buttonEvasi = document.getElementById('fetchOrdiniEvasi');
+        buttonEvasi.addEventListener("click", async () => {
+            try {
+                let response = await fetch(`/Ordine/TotaleOrdiniEvasi`);
+                let data = await response.json();
+                console.log(data);
+                document.getElementById('ordiniEvasi').innerText = `Ordini Evasi: ${data}`;
+            }
+            catch (error) {
+                console.log("error: ", error);
+            }
+        })  
+</script>

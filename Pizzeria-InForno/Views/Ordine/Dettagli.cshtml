@@ -1,0 +1,21 @@
+﻿@model Pizzeria_InForno.Models.Ordini
+
+
+<div class="container">
+    <h1>Dettagli dell Ordine @Model.IdOrdine</h1>
+    <div class="row">
+        <div class="col-6">
+            <h3>L'ordine @Model.IdOrdine contiene i seguenti prodotti'</h3>
+            @foreach (var articolo in Model.DettagliOrdine)
+            {
+                <div class="col mb-3">
+                    <div class="d-flex align-items-center justify-content-between border border-2 p-2 rounded-3">
+                        <img src="@articolo.Articoli.Immagine" alt="@articolo.Articoli.NomeArticolo" class="card-img-top" style="max-width: 200px" />
+                        <p class="mb-0">Quantità: @articolo.Quantita</p>
+                        <p class="mb-0">Prezzo: @articolo.Articoli.Prezzo</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

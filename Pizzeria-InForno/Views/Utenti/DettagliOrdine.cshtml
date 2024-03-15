@@ -2,15 +2,17 @@
 
 
 <div class="container">
-    <h1>Dettagli dell Ordine @Model.IdOrdine</h1>
-    <div class="row">
+    <h1 class="myTextColor mt-3">Dettagli dell Ordine @Model.IdOrdine</h1>
+    <div class="row mt-5">
         <div class="col-6">
-            <h3>L'ordine @Model.IdOrdine contiene i seguenti prodotti'</h3>
+            <h3 class="myTextColor mt-2">L'ordine @Model.IdOrdine contiene i seguenti prodotti'</h3>
             @foreach(var articolo in Model.DettagliOrdine)
             {
                 <div class="col mb-3">
-                    <div class="d-flex align-items-center justify-content-between border border-2 p-2 rounded-3">
-                        <img src="@articolo.Articoli.Immagine" alt="@articolo.Articoli.NomeArticolo" class="card-img-top" style="max-width: 200px" />
+                    <div class="d-flex align-items-center justify-content-between myBorder p-2">
+                        <div class="imgContainer">
+                            <img src="@articolo.Articoli.Immagine" alt="@articolo.Articoli.NomeArticolo" class="card-img-top myImgPizza"/>
+                        </div>
                         <p class="mb-0">Quantità: @articolo.Quantita</p>
                         <p class="mb-0">Prezzo: @articolo.Articoli.Prezzo</p>
                     </div>

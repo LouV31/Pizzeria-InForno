@@ -12,9 +12,12 @@ namespace Pizzeria_InForno.Models
         public int IdUtente { get; set; }
         [Required]
         public string IndirizzoSpedizione { get; set; }
-
+        [Required]
+        [Display(Name = "Data Ordine")]
+        public DateTime DataOrdine { get; set; }
 
         [Required]
+        [Display(Name = "Evaso")]
         public bool IsConsegnato { get; set; } = false;
         [Required]
         public string Note { get; set; } = "";

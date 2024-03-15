@@ -3,16 +3,67 @@
     ViewData["Title"] = "CartView";
 }
 
-<h1>CartView</h1>
+<div class="container">
 
-@foreach(var item in Model)
-{
-    <p>@item.Articoli.NomeArticolo</p>
-    <p>@item.Quantita</p>
-    <p>@item.Totale</p>    
+    @if (!Model.Any())
+    {
+        
+        <p class="alert bgNav text-white">Il carrello è vuoto</p>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="row border border-1 border-secondary border-start-0 border-end-0 border-top-0 mb-3">
+                <div class="col-7">
+                    <div class="imgContainer">
+                        <img class="img-fluid myImgPizza" src="@item.Articoli.Immagine" alt="@item.Articoli.NomeArticolo">
+                    </div>
+                    
+                </div>
+                <div class="col-5">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h5 class="card-title fs-1">Prodotto: @item.Articoli.NomeArticolo</h5>
+                        <p class="fw-semibold fs-6 mb-0">Quantità: @item.Quantita</p>
+                    </div>
+                    <div class="d-flex">
+                        <p id="total-@item.Articoli.IdArticolo" class="total fw-semibold fs-6 mb-0">Prezzo: @item.Totale<span>€</span></p>
+                    </div>
+                        <button class="btn-remove btn btn-danger" data-id="@item.Articoli.IdArticolo">Rimuovi</button>
+                </div>
+            </div>
+        }
 
-    
-}
-<h2>Totale dell'ordine: @ViewBag.PrezzoTotale</h2>
-<a class="btn btn-primary" asp-controller="Ordine" asp-action="Create">Crea Ordine</a>
+        <div class="d-flex flex-column align-items-end">
+            <h2 class="text-end mb-0">Totale dell'ordine: <span id="total-order">@ViewBag.PrezzoTotale<span>€</span></span></h2>
+            <a class="btn btn-primary" asp-controller="Ordine" asp-action="Create">Crea Ordine</a>
+        </div>
+    }
+</div>
 
+<script>
+    document.querySelectorAll('.btn-remove').forEach(button => {
+        button.addEventListener('click', async function () {
+            const id = this.getAttribute('data-id'); // Assumendo che ogni pulsante abbia un attributo data-id con l'ID dell'articolo
+            try {
+                const response = await fetch('/Articoli/RemoveFromCart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Articoli: { IdArticolo: id } })
+                });
+                if (response.ok) {
+                    // Aggiorna la vista del carrello o mostra un messaggio di successo
+                    location.reload();
+                } else {
+                    // Mostra un messaggio di errore
+                    alert("Si è verificato un errore durante la rimozione dell'articolo dal carrello.");
+                }
+            } catch (error) {
+                // Gestisci eventuali errori di rete
+                alert("Si è verificato un errore di rete.");
+            }
+        });
+    });
+</script>

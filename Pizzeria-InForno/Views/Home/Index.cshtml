@@ -4,19 +4,34 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
     <div class="container">
+        <div class="row mb-5">
+            <div class="col">
+                <div>
+                    <img src="./logo/InForno.png" style="width: 500px" class="img-fluid" alt="Responsive image">
+                </div>
+            </div>
+        </div>
+        <h2 class="text-start">I nostri prodotti</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5">
             @foreach(var articolo in Model)
             {
-                <div class="col">
-                    <div class="card" >
-                        <img class="card-img-top" src="@articolo.Immagine" alt="@articolo.NomeArticolo">
-                        <div class="card-body">
+                <div class="col gy-3">
+                    <div class="card mx-2 bgNav border-0 overflow-hidden shadow d-flex flex-column align-items-center">
+                        <div class="imgContainer">
+                            <img class="img-fluid myImgPizza" src="@articolo.Immagine" alt="@articolo.NomeArticolo">
+                        </div>
+                        <div class="card-body text-white">
                             <h5 class="card-title">@articolo.NomeArticolo</h5>
-                            <p class="card-text">@articolo.Descrizione</p>
-                            <p class="card-text">Prezzo: @articolo.Prezzo €</p> 
-                            <button type="button" id="@articolo.IdArticolo" href="#" class="btn btn-primary btn-add">Aggiungi al Carrello</button>
+                            <p class="card-text">Prezzo: @articolo.Prezzo €</p>
+                            <hr/>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <button type="button" id="@articolo.IdArticolo" href="#" class="btn btn-outline-warning btn-add btn-sm me-2">Aggiungi</button>
+                                    <input type="number" id="quantity-@articolo.IdArticolo" class="input-group-sm" min="1" value="1" style="width: 45px">
+                            </div>
+                                <span>
+                                </span>
+                            
                         </div>
                     </div>
 
@@ -32,19 +47,21 @@
     buttons.forEach(button => {
         button.addEventListener("click", () => {
             let productId = button.id;
-            sentToCart(productId);
+            let quantity = document.getElementById(`quantity-${productId}`).value
+            sentToCart(productId, quantity);
         });
     });
 
     // qui sto facendo una fetch per inviare l'id dell'articolo al carrello
     
-    let sentToCart = async (id) => {
+    let sentToCart = async (id, quantity) => {
         try {
-            let response = await fetch(`Articoli/AddToCart/${id}`, {
+            let response = await fetch(`Articoli/AddToCart/`, {
                 method: 'POST', // or 'GET'
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ Articoli: { IdArticolo: id }, Quantita: quantity })
             });
             if (response.ok) {
                 console.log("Articolo inviato correttamente");

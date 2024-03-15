@@ -86,6 +86,8 @@ namespace Pizzeria_InForno.Controllers
             {
                 var prezzoArticolo = dettaglio.Articoli.Prezzo + dettaglio.Articoli.DettagliIngrediente.Sum(di => di.Ingredienti.Prezzo);
                 dettaglio.Articoli.Prezzo = prezzoArticolo * dettaglio.Quantita;
+
+                dettaglio.Articoli.Immagine = Path.Combine("/", dettaglio.Articoli.Immagine);
             }
             return View(ordine);
         }

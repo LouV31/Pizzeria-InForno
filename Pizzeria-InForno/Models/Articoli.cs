@@ -14,6 +14,7 @@ namespace Pizzeria_InForno.Models
         public double Prezzo { get; set; }
         [Required]
         public string Immagine { get; set; }
+
         [Required]
         [Display(Name = "Tempi di consegna")]
         public int TempoConsegna { get; set; }
